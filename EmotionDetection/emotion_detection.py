@@ -25,6 +25,18 @@ def _extract_emotions(response) -> dict:
     """
     Extract the required set of emotions along with their scores
     """
+
+    # set all values to None when the staus_code is 400
+    if response.status_code == 400:
+        return {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None
+        }
+
     # Parsing the JSON response from the API
     json_response: json = json.loads(response.text)
 
