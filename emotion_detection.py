@@ -1,3 +1,4 @@
+import json
 import requests
 
 def emotion_detector(text_to_analyze: str) -> str:
@@ -18,4 +19,33 @@ def emotion_detector(text_to_analyze: str) -> str:
     response = requests.post(url, json=input_text, headers=header, timeout=10)
 
     # return the text of the response
-    return response.text
+    return _extract_emotions(response)
+
+def _extract_emotions(response) -> dict:
+    """
+    Extract the required set of emotions along with their scores
+    """
+    # Parsing the JSON response from the API
+    json_response: json = json.loads(response.text)
+
+    # Get the predictions
+    emotion_predictions: list = json_response['emotionPredictions']
+
+    # Parse out the emotions dictionary
+    emotions: dict = emotion_predictions[0]['emotion']
+
+    # Get the domincant emotion score
+    dominant_emotion_score = max(list(emotions.values()))
+
+    for emotion, score in emotions.items():
+        if dominant_emotion_score == score:
+            emotions['dominant_emotion'] = emotion
+            break
+
+    return emotions
+
+
+
+
+
+
